@@ -6,33 +6,62 @@ import java.awt.Point;
 
 	class Exercise5
 	{
-		final int triggerLevel = 300;
+		String s="Counter";
+		final int triggerLevel = 130;
 		Motor mot1=new Motor(MotorPort.A);
 		Motor mot2=new Motor(MotorPort.B);
 		TouchSensor t1=new TouchSensor(SensorPort.S3);
+		UltrasonicSensor s1=new UltrasonicSensor(SensorPort.S1);
+		int counter=0;
 		
 		public void far(){
-
-		    mot1.forward();
-		    mot2.backward();
+			
+			mot1.backward();
+			mot2.forward();
+			
+				if(s1.getDistance()<triggerLevel&& (s1.getDistance()>0))
+				{  	
+					mot1.stop();
+					mot2.stop();
+					near();
+				}
+				
+			}
+		
 		    
-		}
+		
 		
 		public void near(){
-		
-		mot2.forward();
-		
-		while(!t1.isPressed());
-		
-		mot1.stop();
-		mot2.stop();
-		
-		
+
+			//Object Found
+	       	int aux=0;
+	       	System.out.print("FOUND");
+	    	counter++;   	
+	    	
+	    	mot1.forward();
+			mot2.forward();
+			//Stop at touching
+			while(!t1.isPressed());
+			mot1.stop();
+			mot2.stop();
+			
+			NxtContext.setStatusText(s.concat((String.valueOf(counter))));
+		    	
+	    	//Returning after counting
+	       	aux=s1.getDistance();	    
+	       	do{	
+	       	mot1.backward();
+	    	mot1.backward();
+	    	}
+	    	while(s1.getDistance()<=aux);
+	       	mot2.forward();
+	       	for(int i=0;i<100;i++);
+	       	mot2.backward();
 		}
 				
 	  Exercise5()
 	  {
-		String s="Counter";
+		
 		 //Instance a Robot
 	    NxtRobot robot = new NxtRobot();
 	    //Instance a Gear
@@ -41,7 +70,7 @@ import java.awt.Point;
 	    //Add parts to Robot
 	    robot.addPart(mot1);
 	    robot.addPart(mot2);
-	    UltrasonicSensor s1=new UltrasonicSensor(SensorPort.S1);
+	    
 	    
 	    
 	    //Sensor1
@@ -49,71 +78,62 @@ import java.awt.Point;
 	    //Touch1
 	    robot.addPart(t1);
 	    
-	    far();
-	    int counter=0;
+	    
+	    
+	    int a=0;
 	    int aux=0;
 	    Random r= new Random();
 	    
 	    
 	    while(true)
 	    {
-	    	   
-	    	aux=s1.getDistance();
-	    	if(aux==-1)
+
+	    	far();	   
+	    		
+	    	Tools.delay(5000);
+	           	
+	    	aux=s1.getDistance();    	
+	    	
+	    	//Out of Range
+	    	while (aux==-1)
 	    	{
-	    		NxtContext.setStatusText(s.concat((String.valueOf(aux))));
-	    		while(aux==1){
-	    			System.out.println(aux);
-	    			switch(r.nextInt(5)){
+	    			a=r.nextInt(5);
+	    			switch(a)
+	    			{
 	    			case 1:
 	    			mot1.forward();
 	    			mot2.backward();
-	    			Tools.delay(1000);
+	    			Tools.delay(10);
+	    			far();
 	    			break;
 	    			case 2:
 	    			mot1.forward();
 	    			mot2.forward();
-	    			Tools.delay(1000);
+	    			Tools.delay(10);
+	    			far();
 	    			break;
 	    			case 3:
 	    			mot1.backward();
 		    		mot2.backward();
-		    		Tools.delay(1000);
+		    		Tools.delay(10);
+		    		far();
 		    		break;
 	    			case 4:
 	    			mot1.backward();
 		    		mot2.forward();
-		    		Tools.delay(1000);
+		    		Tools.delay(10);
+		    		far();
 		    		break;
 	    			}
-	    		aux=s1.getDistance();
+		    		aux=s1.getDistance();
 	    		}
-	    	
-	    	s="Counter: ";
-		    NxtContext.setStatusText(s.concat((String.valueOf(counter))));
-	       	if(aux<triggerLevel&&aux>0)
-	    	{
-	    	s="Distance";
-	    	near();
-	    	counter++;
-	    	
-	    	do{	
-	       	mot1.backward();
-	    	mot2.backward();
-	    	Tools.delay(10);
+	    		far();
 	    	}
-	    	while(s1.getDistance()!=aux);
-	
-	 
-	    	
-	
-	 
-//	    	else
-//	    	far();}
-	    	aux=s1.getDistance();
-	    	}
-	    	}
-	    }
+	    
+	    
+	    
+	    
+	    
 	    //robot.exit();
 	  }
 
@@ -126,21 +146,23 @@ import java.awt.Point;
 	  // ------------------ Environment --------------------------
 	  static
 	  {
-		  Point[] mesh = new Point[] {new Point(50, 50),new Point(60,60),
-				  new Point(50, 60),new Point(60,50),
-				  
-				  };
-		  Point[] mesh1 = new Point[] {new Point(50, 50),new Point(60,60)};
-		  Point[] mesh2 = new Point[] {new Point(300, 300),new Point(300,300)};
-		  NxtContext.useTarget("sprites/squaretarget.gif", mesh,355, 355);
-		  NxtContext.useTarget("sprites/squaretarget.gif", mesh1,405, 405);
-		 // NxtContext.useTarget("sprites/squaretarget.gif", mesh2,300, 300);
-		  NxtContext.useObstacle("sprites/squaretarget.gif",355,355);
-		  NxtContext.useObstacle("sprites/squaretarget.gif",405,405);
-	//	  NxtContext.useObstacle("sprites/squaretarget.gif",55,55);
+
+		  Point[] mesh1 = new Point[] {new Point(50, 50),new Point(150,50),
+				  					   new Point(50,250),new Point(100,250)};
+		  Point[] mesh2 = new Point[] {new Point(250, 250),new Point(350,350),
+				  						new Point(250, 450),new Point(350,450),};
+		  Point[] mesh3 = new Point[] {new Point(300, 100),new Point(400,200),
+										new Point(300, 300),new Point(400,300),};
+		  NxtContext.useTarget("sprites/squaretarget.gif", mesh1,100, 150);
+		  NxtContext.useTarget("sprites/squaretarget.gif", mesh2,300, 300);
+		  NxtContext.useTarget("sprites/squaretarget.gif", mesh3,350, 200);
+	
+		  NxtContext.useObstacle("sprites/squaretarget.gif",100,150);
+		  NxtContext.useObstacle("sprites/squaretarget.gif",300,300);
+		  NxtContext.useObstacle("sprites/squaretarget.gif",350,200);
 		  NxtContext.showStatusBar(30);
 
-	    NxtContext.setStartPosition(3, 410);
+	    NxtContext.setStartPosition(260, 250);
 	    NxtContext.setStartDirection(45);
 
 	  }

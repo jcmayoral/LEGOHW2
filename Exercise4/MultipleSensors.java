@@ -13,10 +13,10 @@ public class MultipleSensors {
 		
 		NxtRobot robot = new NxtRobot();
 		Gear gear = new Gear();
-		SoundSensor ss = new SoundSensor(SensorPort.S3);
-		TouchSensor ts = new TouchSensor(SensorPort.S2);
+		SoundSensor ss = new SoundSensor(SensorPort.S2);
+		TouchSensor ts = new TouchSensor(SensorPort.S3);
 		LightSensor ls = new LightSensor(SensorPort.S1);
-		int trigerLevel = 10;
+		int triggerLevel = 10;
 		
 		robot.addPart(gear);
 		robot.addPart(ss);
@@ -25,14 +25,20 @@ public class MultipleSensors {
 		
 		
 		while(true){
-			/* when the robot hear a voice louder than the triger value starts moving */
-			if(ss.getValue()>trigerLevel){
+			/* when the robot hear a voice louder than the trigger value starts moving */
+			if(ss.getValue()>triggerLevel){
 				
 				for(;;){
-				      if (ls.getValue() < 500)
-				          gear.rightArc(0.09);
-				        else
-			          	  gear.leftArc(0.09);
+					if (ts.isPressed()){
+						gear.forward(500);
+						gear.stop();
+						break;
+					}
+						
+				    if (ls.getValue() < 500)
+				      gear.rightArc(0.07);
+				    else
+			          gear.leftArc(0.07);
 					
 				}
 				
@@ -46,6 +52,7 @@ public class MultipleSensors {
 	static{
 		NxtContext.setStartPosition(80, 270);
 		NxtContext.useBackground("/home/a/workspace/Assignment2/src/sprites/background.gif");
+		NxtContext.useObstacle("/home/a/workspace/Assignment2/src/sprites/wall4.gif", 270, 315);
 		
 		}
 
